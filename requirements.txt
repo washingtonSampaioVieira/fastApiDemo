@@ -2,6 +2,8 @@ fastapi==0.100.0
 uvicorn==0.23.0
 requests==2.31.0
 httpx==0.24.1
+SQLAlchemy==2.0.19
+psycopg2==2.9.6
 
 # TESTS
 pytest==7.4.0
