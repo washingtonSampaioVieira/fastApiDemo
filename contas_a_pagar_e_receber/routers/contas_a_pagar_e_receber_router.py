@@ -4,7 +4,7 @@ from typing import List
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-router = APIRouter(prefix='/contas-a-pagar-e-receber')
+router = APIRouter(prefix='/contas-pagar-receber')
 
 
 class ContaPagarReceberResponse(BaseModel):
@@ -34,5 +34,9 @@ def listar_contas():
 
 @router.post('/', response_model=ContaPagarReceberResponse, status_code=201)
 def criar_conta(conta: ContaPagarReceberRequest):
-    conta.id = 2
-    return conta
+    return ContaPagarReceberResponse(
+        id=2,
+        descricao=conta.descricao,
+        valor=conta.valor,
+        tipo=conta.tipo
+    )
