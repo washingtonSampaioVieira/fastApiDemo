@@ -28,15 +28,8 @@ class ContaPagarReceberRequest(BaseModel):
 
 
 @router.get('/', response_model=List[ContaPagarReceberResponse])
-def listar_contas():
-    return [
-        ContaPagarReceberResponse(
-            id=1,
-            descricao="aluguel",
-            valor=100.50,
-            tipo="PAGAR"
-        )
-    ]
+def listar_contas(db: Session = Depends(get_db)) -> List[ContaPagarReceberResponse]:
+    return db.query(ContaPagarReceber).all()
 
 
 @router.post('/', response_model=ContaPagarReceberResponse, status_code=201)
