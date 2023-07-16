@@ -89,6 +89,17 @@ def test_deve_listar_por_id():
     assert response_json["tipo"] == nova_conta_response["tipo"]
 
 
+def test_deve_retornar_nao_encontrado():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    response_get = client.get('/contas-pagar-receber/1')
+    response_json = response_get.json()
+
+    assert response_get.status_code == 404
+    assert response_json["message"] == "Oops! conta a pagar e receber não encontrado"
+
+
 def test_deve_retornar_erro_quando_exceder_a_descricao():
     response = client.post('/contas-pagar-receber', json={
         'descricao': '123456789012345678123412901234567890',
