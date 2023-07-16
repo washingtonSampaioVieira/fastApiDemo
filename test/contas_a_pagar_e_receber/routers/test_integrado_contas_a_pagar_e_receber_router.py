@@ -181,3 +181,5 @@ def test_deve_deletar_conta_a_pagar_e_receber():
 
     assert response_put.status_code == 204
     assert response_get.json() == []
+
+

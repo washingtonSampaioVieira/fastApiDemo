@@ -18,10 +18,13 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 
 from contas_a_pagar_e_receber.models import conta_a_pagar_receber_model
+from contas_a_pagar_e_receber.models import fornecedor_cliente_model
 
 from shared.databse import Base
+
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
