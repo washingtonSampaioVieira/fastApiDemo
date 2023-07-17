@@ -39,8 +39,8 @@ def test_deve_listar_contas_a_pagar_e_receber():
 
     assert response.status_code == 200
     assert response.json() == [
-        {'id': 1, 'descricao': 'aluguel', 'valor': '100.0000000000', 'tipo': 'PAGAR'},
-        {'id': 2, 'descricao': 'aluguel', 'valor': '100.0000000000', 'tipo': 'PAGAR'}
+        {'id': 1, 'descricao': 'aluguel', 'valor': '100.0000000000', 'tipo': 'PAGAR', 'fornecedor': None},
+        {'id': 2, 'descricao': 'aluguel', 'valor': '100.0000000000', 'tipo': 'PAGAR', 'fornecedor': None}
     ]
 
 
