@@ -17,3 +17,4 @@ Após isso é só rodar a main.py na sua IDE
 
 ## Dicas
 [Guide API REST](https://github.com/NationalBankBelgium/REST-API-Design-Guide/wiki/CRUD-Delete-Single-item)
+
