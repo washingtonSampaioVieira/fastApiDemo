@@ -45,16 +45,18 @@ def test_deve_listar_contas_de_fornecedor_cliente():
 
     assert response.status_code == 200
     assert response.json() == [
-        {'descricao': 'aluguel', 'fornecedor': {'id': 1, 'nome': 'ENEL'}, 'id': 1, 'tipo': 'PAGAR', 'valor': '100.0000000000'},
-        {'descricao': 'Conta de Luz', 'fornecedor': {'id': 1, 'nome': 'ENEL'}, 'id': 2, 'tipo': 'PAGAR', 'valor': '100.0000000000'}
+        {'data_baixa': None, 'descricao': 'aluguel', 'esta_baixada': False, 'fornecedor': {'id': 1, 'nome': 'ENEL'},
+         'id': 1, 'tipo': 'PAGAR', 'valor': '100.0000000000', 'valor_da_baixa': None},
+
+        {'data_baixa': None, 'descricao': 'Conta de Luz', 'esta_baixada': False, 'fornecedor': {'id': 1, 'nome': 'ENEL'},
+         'id': 2, 'tipo': 'PAGAR', 'valor': '100.0000000000', 'valor_da_baixa': None}
     ]
 
+    def test_deve_retornar_lista_vazia_de_fornecedor_cliente():
+        Base.metadata.drop_all(bind=engine)
+        Base.metadata.create_all(bind=engine)
 
-def test_deve_retornar_lista_vazia_de_fornecedor_cliente():
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
+        response = client.get('/fornecedor-cliente/1/contas-pagar-receber')
 
-    response = client.get('/fornecedor-cliente/1/contas-pagar-receber')
-
-    assert response.status_code == 200
-    assert response.json() == []
+        assert response.status_code == 200
+        assert response.json() == []

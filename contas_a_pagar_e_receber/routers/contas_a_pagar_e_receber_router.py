@@ -1,15 +1,16 @@
+from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import List, Optional
+from typing import List
+from xmlrpc.client import boolean
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from contas_a_pagar_e_receber.models.conta_a_pagar_receber_model import ContaPagarReceber
 from contas_a_pagar_e_receber.models.fornecedor_cliente_model import FornecedorCliente
-from contas_a_pagar_e_receber.routers.fornecedor_cliente_router import FornecedorClienteResponse, \
-    buscar_fornecedor_cliente_por_id
+from contas_a_pagar_e_receber.routers.fornecedor_cliente_router import FornecedorClienteResponse
 from shared.dependencies import get_db
 from shared.exceptions import NotFound
 
@@ -22,6 +23,9 @@ class ContaPagarReceberResponse(BaseModel):
     valor: Decimal
     tipo: str
     fornecedor: FornecedorClienteResponse | None = None
+    data_baixa: datetime | None = None
+    valor_da_baixa: Decimal | None = None
+    esta_baixada: bool | None = None
 
     class Config:
         orm_mode = True
@@ -80,6 +84,24 @@ def atualizar_conta(id: int, conta_request: ContaPagarReceberRequest,
     conta_pagar_receber.valor = conta_request.valor
     conta_pagar_receber.descricao = conta_request.descricao
     conta_pagar_receber.fornecedor_client_id = conta_request.fornecedor_client_id
+
+    db.add(conta_pagar_receber)
+    db.commit()
+    db.refresh(conta_pagar_receber)
+
+    return conta_pagar_receber
+
+
+@router.post('/{id}/baixar', response_model=ContaPagarReceberResponse, status_code=201)
+def baixar_conta(id: int, db: Session = Depends(get_db)) -> ContaPagarReceberResponse:
+    conta_pagar_receber = busca_conta_por_id(id, db)
+
+    if conta_pagar_receber.esta_baixada and conta_pagar_receber.valor == conta_pagar_receber.valor_da_baixa:
+        return conta_pagar_receber
+
+    conta_pagar_receber.data_baixa = datetime.now()
+    conta_pagar_receber.esta_baixada = True
+    conta_pagar_receber.valor_da_baixa = conta_pagar_receber.valor
 
     db.add(conta_pagar_receber)
     db.commit()
