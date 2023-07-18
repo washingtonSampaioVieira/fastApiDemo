@@ -33,6 +33,9 @@ def obter_fornecedor_cliente_por_id(id: int, db: Session = Depends(get_db)) -> F
     return buscar_fornecedor_cliente_por_id(id, db)
 
 
+
+
+
 @router.post("", response_model=FornecedorClienteResponse, status_code=201)
 def criar_fornecedor_cliente(fornecedor_cliente_request: FornecedorClienteRequest,
                              db: Session = Depends(get_db)) -> FornecedorClienteResponse:
@@ -75,4 +78,3 @@ def buscar_fornecedor_cliente_por_id(id, db: Session) -> FornecedorClienteRespon
         raise NotFound("fornecedor Cliente")
 
     return fornecedor_cliente
-

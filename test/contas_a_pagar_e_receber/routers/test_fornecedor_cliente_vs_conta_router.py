@@ -1,0 +1,60 @@
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from main import app
+from shared.databse import Base
+from shared.dependencies import get_db
+
+client = TestClient(app)
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
+
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def overide_get_db():
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+app.dependency_overrides[get_db] = overide_get_db
+
+
+def test_deve_listar_contas_de_fornecedor_cliente():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    client.post('/fornecedor-cliente', json={'nome': "ENEL"})
+
+    client.post('/contas-pagar-receber',
+                json={'descricao': 'aluguel', 'valor': '100.0000000000', 'tipo': 'PAGAR', 'fornecedor_client_id': 1})
+
+    client.post('/contas-pagar-receber',
+                json={'descricao': 'Conta de Luz', 'valor': '100.0000000000', 'tipo': 'PAGAR',
+                      'fornecedor_client_id': 1})
+
+    response = client.get('/fornecedor-cliente/1/contas-pagar-receber')
+
+    assert response.status_code == 200
+    assert response.json() == [
+        {'descricao': 'aluguel', 'fornecedor': {'id': 1, 'nome': 'ENEL'}, 'id': 1, 'tipo': 'PAGAR', 'valor': '100.0000000000'},
+        {'descricao': 'Conta de Luz', 'fornecedor': {'id': 1, 'nome': 'ENEL'}, 'id': 2, 'tipo': 'PAGAR', 'valor': '100.0000000000'}
+    ]
+
+
+def test_deve_retornar_lista_vazia_de_fornecedor_cliente():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    response = client.get('/fornecedor-cliente/1/contas-pagar-receber')
+
+    assert response.status_code == 200
+    assert response.json() == []
