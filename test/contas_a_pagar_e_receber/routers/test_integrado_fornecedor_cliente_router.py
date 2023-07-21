@@ -3,8 +3,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from main import app
-from shared.databse import Base
-from shared.dependencies import get_db
+from app.core.config.databse import Base
+from app.core.config.dependencies import get_db
 
 client = TestClient(app)
 

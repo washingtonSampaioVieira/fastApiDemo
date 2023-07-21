@@ -1,46 +1,17 @@
 from datetime import datetime
-from decimal import Decimal
-from enum import Enum
 from typing import List
-from xmlrpc.client import boolean
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from contas_a_pagar_e_receber.models.conta_a_pagar_receber_model import ContaPagarReceber
-from contas_a_pagar_e_receber.models.fornecedor_cliente_model import FornecedorCliente
-from contas_a_pagar_e_receber.routers.fornecedor_cliente_router import FornecedorClienteResponse
-from shared.dependencies import get_db
-from shared.exceptions import NotFound
+from app.core.model.conta_a_pagar_receber_model import ContaPagarReceber
+from app.core.router.request.conta_pagar_receber_request import ContaPagarReceberRequest
+from app.core.router.response.conta_pagar_receber_response import ContaPagarReceberResponse
+from app.core.service.contas_a_pagar_e_receber_service import busca_conta_por_id, valida_fornecedor
+from app.core.config.dependencies import get_db
+from app.core.exception.exceptions import NotFound
 
 router = APIRouter(prefix='/contas-pagar-receber')
-
-
-class ContaPagarReceberResponse(BaseModel):
-    id: int
-    descricao: str
-    valor: Decimal
-    tipo: str
-    fornecedor: FornecedorClienteResponse | None = None
-    data_baixa: datetime | None = None
-    valor_da_baixa: Decimal | None = None
-    esta_baixada: bool | None = None
-
-    class Config:
-        orm_mode = True
-
-
-class ContaPagarReceberTipoEnum(str, Enum):
-    PAGAR = 'PAGAR'
-    RECEBER = 'RECEBER'
-
-
-class ContaPagarReceberRequest(BaseModel):
-    descricao: str = Field(min_length=3, max_length=30)
-    valor: Decimal = Field(gt=0)
-    tipo: ContaPagarReceberTipoEnum
-    fornecedor_client_id: int | None = None
 
 
 @router.get('/', response_model=List[ContaPagarReceberResponse])
@@ -116,20 +87,3 @@ def deletar_conta(id: int, db: Session = Depends(get_db)) -> None:
     db.delete(conta_pagar_receber)
 
     db.commit()
-
-
-def busca_conta_por_id(id: int, db: Session) -> ContaPagarReceber:
-    conta_pagar_receber = db.query(ContaPagarReceber).get(id)
-
-    if conta_pagar_receber is None:
-        raise NotFound("conta a pagar e receber")
-
-    return conta_pagar_receber
-
-
-def valida_fornecedor(id, db: Session) -> None:
-    if id is not None:
-        fornecedor = db.query(FornecedorCliente).get(id)
-
-        if fornecedor is None:
-            raise NotFound("fornecedor cliente")

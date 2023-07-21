@@ -16,10 +16,10 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column('contas_a_pagar_e_receber', sa.Column('fornecedor_client_id', sa.Integer(), nullable=True))
-    op.create_foreign_key(None, 'contas_a_pagar_e_receber', 'fornecedor_cliente', ['fornecedor_client_id'], ['id'])
+    op.add_column('app', sa.Column('fornecedor_client_id', sa.Integer(), nullable=True))
+    op.create_foreign_key(None, 'app', 'fornecedor_cliente', ['fornecedor_client_id'], ['id'])
 
 
 def downgrade() -> None:
-    op.drop_constraint(None, 'contas_a_pagar_e_receber', type_='foreignkey')
-    op.drop_column('contas_a_pagar_e_receber', 'fornecedor_client_id')
+    op.drop_constraint(None, 'app', type_='foreignkey')
+    op.drop_column('app', 'fornecedor_client_id')

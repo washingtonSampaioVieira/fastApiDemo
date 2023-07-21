@@ -11,6 +11,8 @@ Aplicação feita com FastApi para estudar ferramenta
 
 `alembic upgrade head` para criar as tabelas no banco
 
+## Para rodar os testes de integração
+`pytest  --verbose --html=report.html`
 
 Após isso é só rodar a main.py na sua IDE
 

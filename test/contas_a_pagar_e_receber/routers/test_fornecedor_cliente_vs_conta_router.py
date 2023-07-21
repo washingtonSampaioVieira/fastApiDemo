@@ -2,9 +2,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from app.core.config.dependencies import get_db
 from main import app
-from shared.databse import Base
-from shared.dependencies import get_db
+from app.core.config.databse import Base
 
 client = TestClient(app)
 
@@ -25,7 +25,7 @@ def overide_get_db():
         db.close()
 
 
-app.dependency_overrides[get_db] = overide_get_db
+app.dependency_overrides[get_db()] = overide_get_db
 
 
 def test_deve_listar_contas_de_fornecedor_cliente():

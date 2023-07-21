@@ -1,4 +1,4 @@
-from shared.databse import SessionLocal
+from app.core.config.databse import SessionLocal
 
 
 def get_db():

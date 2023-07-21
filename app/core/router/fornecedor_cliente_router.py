@@ -1,26 +1,17 @@
 from typing import List
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from contas_a_pagar_e_receber.models.fornecedor_cliente_model import FornecedorCliente
-from shared.dependencies import get_db
-from shared.exceptions import NotFound
+from app.core.model.conta_a_pagar_receber_model import ContaPagarReceber
+from app.core.model.fornecedor_cliente_model import FornecedorCliente
+from app.core.router.request.fornecedor_cliente_request import FornecedorClienteRequest
+from app.core.router.response.conta_pagar_receber_response import ContaPagarReceberResponse
+from app.core.router.response.fornecedor_cliente_response import FornecedorClienteResponse
+from app.core.service.fornecedor_cliente_service import buscar_fornecedor_cliente_por_id
+from app.core.config.dependencies import get_db
 
 router = APIRouter(prefix="/fornecedor-cliente")
-
-
-class FornecedorClienteResponse(BaseModel):
-    id: int
-    nome: str
-
-    class Config:
-        orm_mode = True
-
-
-class FornecedorClienteRequest(BaseModel):
-    nome: str = Field(min_length=3, max_length=255)
 
 
 @router.get("", response_model=List[FornecedorClienteResponse])
@@ -31,9 +22,6 @@ def listar_fornecedor_cliente(db: Session = Depends(get_db)) -> List[FornecedorC
 @router.get("/{id}", response_model=FornecedorClienteResponse)
 def obter_fornecedor_cliente_por_id(id: int, db: Session = Depends(get_db)) -> FornecedorClienteResponse:
     return buscar_fornecedor_cliente_por_id(id, db)
-
-
-
 
 
 @router.post("", response_model=FornecedorClienteResponse, status_code=201)
@@ -71,10 +59,7 @@ def excluir_fornecedor_cliente(id: int, db: Session = Depends(get_db)) -> None:
     db.commit()
 
 
-def buscar_fornecedor_cliente_por_id(id, db: Session) -> FornecedorClienteResponse:
-    fornecedor_cliente = db.query(FornecedorCliente).get(id)
-
-    if fornecedor_cliente is None:
-        raise NotFound("fornecedor Cliente")
-
-    return fornecedor_cliente
+@router.get("/{id}/contas-pagar-receber", response_model=List[ContaPagarReceberResponse])
+def obter_contas_a_pagar_de_um_fornecedor_cliente_por_id(id: int, db: Session = Depends(get_db)) \
+        -> List[ContaPagarReceberResponse]:
+    return db.query(ContaPagarReceber).filter_by(fornecedor_client_id=id)

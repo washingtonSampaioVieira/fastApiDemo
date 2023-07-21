@@ -16,7 +16,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.create_table('contas_a_pagar_e_receber',
+    op.create_table('app',
                     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
                     sa.Column('descricao', sa.String(length=30), nullable=True),
                     sa.Column('valor', sa.Numeric(), nullable=True),
@@ -26,4 +26,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_table('contas_a_pagar_e_receber')
+    op.drop_table('app')

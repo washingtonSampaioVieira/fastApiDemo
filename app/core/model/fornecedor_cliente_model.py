@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 
-from shared.databse import Base
+from app.core.config.databse import Base
 
 
 class FornecedorCliente(Base):
